@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily 3 o'clock notes</title>
+</head>
+<body>
+    
+<h1>GB Nightly Strategy meeting notes</h1>
+
+<div>
+    <h2>Safety Comments:</h2>
+    <section id="Safety" contenteditable="true">
+
+    </section>
+</div>
+
+<div>
+    <h2>Environmental Comments:</h2>
+    <section id="Enviormental" contenteditable="true">
+
+    </section>
+</div>
+
+<div>
+    <h2>Quality Comments:</h2>
+    <section id="Quality" contenteditable="true">
+
+    </section>
+</div>
+
+<div>
+    <h2>ETP Comments:</h2>
+    <section id="ETP" contenteditable="true">
+
+    </section>
+</div>
+
+<div>
+    <h2>BOP Comments:</h2>
+    <section id="BOP" contenteditable="true">
+
+    </section>
+</div>
+
+<div>
+    <h2>RFP Comments:</h2>
+    <section id="RFP" contenteditable="true">
+
+    </section>
+</div>
+
+<div>
+    <h2>PM4 Comments:</h2>
+    <section id="PM4" contenteditable="true">
+
+    </section>
+</div>
+
+<div>
+    <h2>Winder Comments:</h2>
+    <section id="Winder" contenteditable="true">
+
+    </section>
+</div>
+
+<div>
+    <h2>Automated Warehouse Comments:</h2>
+    <section id="Automated_Warehouse" contenteditable="true">
+
+    </section>
+</div>
+
+<div>
+    <h2>Maintenance + E&I Comments:</h2>
+    <section id="MaintenanceEI" contenteditable="true">
+
+    </section>
+</div>
+
+<div>
+    <h2>Opportunity List:</h2>
+    <h3>1-2hr</h3>
+    <section id="op1to2" contenteditable="true">
+
+    </section>
+    <h3>3-4hr</h3>
+    <section id="op3to4" contenteditable="true">
+
+    </section>
+</div>
+
+
+<script src="socket.io/socket.io.js"></script>
+<script>
+    const socket = io();
+
+    socket.on("connect", ()=> {
+        console.log(socket.id)
+    })
+
+    let Safety = document.getElementById('Safety');
+    let Enviormental = document.getElementById('Enviormental');
+    let Quality = document.getElementById('Quality');
+    let ETP = document.getElementById('ETP');
+    let BOP = document.getElementById('BOP');
+    let RFP = document.getElementById('RFP');
+    let PM4 = document.getElementById('PM4');
+    let Winder = document.getElementById('Winder');
+    let Automated_Warehouse = document.getElementById('Automated_Warehouse');
+    let MaintenanceEI = document.getElementById('MaintenanceEI');
+    let op1to2 = document.getElementById('op1to2');
+    let op3to4 = document.getElementById('op3to4');
+    let hashmap = null;
+
+    let objs = ["Safety","Enviormental","Quality","ETP","BOP","RFP","PM4","Winder","Automated_Warehouse","MaintenanceEI","op1to2","op3to4"]
+
+    function reviver(key, value) {
+        if(typeof value === 'object' && value !== null) {
+            if (value.dataType === 'Map') {
+            return new Map(value.value);
+            }
+        }
+        return value;
+    }
+
+    //sends data to server when event happens
+    Safety.addEventListener("input", () => {
+        socket.emit("submission", { data: Safety.innerHTML, object: "Safety" });
+    });
+
+    Enviormental.addEventListener("input", () => {
+        socket.emit("submission", { data: Enviormental.innerHTML, object: "Enviormental" });
+    });
+
+    Quality.addEventListener("input", () => {
+        socket.emit("submission", { data: Quality.innerHTML, object: "Quality" });
+    });
+
+    ETP.addEventListener("input", () => {
+        socket.emit("submission", { data: ETP.innerHTML, object: "ETP" });
+    });
+
+    BOP.addEventListener("input", () => {
+        socket.emit("submission", { data: BOP.innerHTML, object: "BOP" });
+    });
+
+    RFP.addEventListener("input", () => {
+        socket.emit("submission", { data: RFP.innerHTML, object: "RFP" });
+    });
+
+    PM4.addEventListener("input", () => {
+        socket.emit("submission", { data: PM4.innerHTML, object: "PM4" });
+    });
+
+    Winder.addEventListener("input", () => {
+        socket.emit("submission", { data: Winder.innerHTML, object: "Winder" });
+    });
+
+    Automated_Warehouse.addEventListener("input", () => {
+        socket.emit("submission", { data: Automated_Warehouse.innerHTML, object: "Automated_Warehouse" });
+    });
+
+    MaintenanceEI.addEventListener("input", () => {
+        socket.emit("submission", { data: MaintenanceEI.innerHTML, object: "MaintenanceEI" });
+    });
+
+    op1to2.addEventListener("input", () => {
+        socket.emit("submission", { data: op1to2.innerHTML, object: "op1to2" });
+    });
+
+    op3to4.addEventListener("input", () => {
+        socket.emit("submission", { data: op3to4.innerHTML, object: "op3to4" });
+    });
+
+    //recievs data from the server and updates the clients page
+    socket.on("submission", (data) => {
+        document.getElementById(data.object).innerHTML = data.data;
+    })
+
+    socket.on("con", (strHashmap)=>{
+        hashmap = JSON.parse(strHashmap, reviver);
+        for(let i = 0; i <objs.length; i++) {
+            document.getElementById(objs[i]).innerHTML = hashmap.get(objs[i]);
+        }
+    })
+
+    // messages the client's console when this called 
+    const listener = (eventName,...args)=>{
+        console.log(eventName,args)
+    }
+
+    socket.onAny(listener);
+
+</script>
+</body>
+</html>
